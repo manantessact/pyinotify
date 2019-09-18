@@ -270,7 +270,7 @@ while 1:
   added = [f for f in after if not f in before]
   removed = [f for f in before if not f in after]
   if added:
-        fpath = "/sharepoint/TO_TRANSCODE/" + added
+        fpath = "/sharepoint/TO_TRANSCODE/" + added[0]
         transcod_obj = Transcoding_MAM()
         transcod_obj.parent_directory = os.getcwd()
         transcod_obj.parent_directory = '.'
