@@ -238,25 +238,49 @@ class Transcoding_MAM:
         else:
             return False
         
-class MyEventHandler(pyinotify.ProcessEvent):
-    def process_IN_CLOSE_WRITE(self, event):
-        if event.pathname.split(".")[-1] in ["mp4", "mxf", "mov", "MTS", 'mts']:
-            print(event.pathname)
-            transcod_obj = Transcoding_MAM()
+#class MyEventHandler(pyinotify.ProcessEvent):
+#    def process_IN_CLOSE_WRITE(self, event):
+#        if event.pathname.split(".")[-1] in ["mp4", "mxf", "mov", "MTS", 'mts']:
+#            print(event.pathname)
+#            transcod_obj = Transcoding_MAM()
 #            transcod_obj.parent_directory = os.getcwd()
-            transcod_obj.parent_directory = '.'
-            transcod_obj.path = '/sharepoint/TO_TRANSCODE/'
-            transcod_obj.file_path = event.pathname 
-            transcod_obj.make_create_dir(transcod_obj.path)
-            transcod_obj.Transcoding()
-            transcod_obj.write_output()
-            os.chdir(transcod_obj.parent_directory)
+#            transcod_obj.parent_directory = '.'
+#            transcod_obj.path = '/sharepoint/TO_TRANSCODE/'
+#            transcod_obj.file_path = event.pathname 
+#            transcod_obj.make_create_dir(transcod_obj.path)
+#            transcod_obj.Transcoding()
+#            transcod_obj.write_output()
+#            os.chdir(transcod_obj.parent_directory)
 
-if __name__== "__main__":
-    print("Starting Watcher")
-    wm = pyinotify.WatchManager()
-    wm.add_watch('/sharepoint/TO_TRANSCODE/', pyinotify.ALL_EVENTS, rec=True)
-    eh = MyEventHandler()
-    notifier = pyinotify.Notifier(wm, eh)
-    notifier.loop()
+#if __name__== "__main__":
+#    print("Starting Watcher")
+#    wm = pyinotify.WatchManager()
+#    wm.add_watch('/sharepoint/TO_TRANSCODE/', pyinotify.ALL_EVENTS, rec=True)
+#    eh = MyEventHandler()
+#    notifier = pyinotify.Notifier(wm, eh)
+#    notifier.loop()
+
+
+import os, time
+path_to_watch = "/sharepoint/TO_TRANSCODE/"
+before = dict ([(f, None) for f in os.listdir (path_to_watch)])
+while 1:
+  time.sleep (2)
+  after = dict ([(f, None) for f in os.listdir (path_to_watch)])
+  added = [f for f in after if not f in before]
+  removed = [f for f in before if not f in after]
+  if added:
+        fpath = "/sharepoint/TO_TRANSCODE/" + added
+        transcod_obj = Transcoding_MAM()
+        transcod_obj.parent_directory = os.getcwd()
+        transcod_obj.parent_directory = '.'
+        transcod_obj.path = '/sharepoint/TO_TRANSCODE/'
+        transcod_obj.file_path = fpath
+        transcod_obj.make_create_dir(transcod_obj.path)
+        transcod_obj.Transcoding()
+        transcod_obj.write_output()
+        os.chdir(transcod_obj.parent_directory)        
+        
+  #if removed: print("Removed: ", ", ".join (removed))
+  before = after
 
