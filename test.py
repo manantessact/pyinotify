@@ -28,7 +28,7 @@ class MyEventHandler(pyinotify.ProcessEvent):
 def main():
     # watch manager
     wm = pyinotify.WatchManager()
-    wm.add_watch('/var/log', pyinotify.ALL_EVENTS, rec=True)
+    wm.add_watch('/sharepoint/TO_TRANSCODE/', pyinotify.ALL_EVENTS, rec=True)
 
     # event handler
     eh = MyEventHandler()
