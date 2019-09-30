@@ -7,7 +7,9 @@ import datetime
 import shutil
 import argparse
 import sys
-import pyinotify
+import time
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 import tqdm
 from pathlib import Path
 
@@ -260,25 +262,29 @@ class Transcoding_MAM:
         else:
             return False
         
-class MyEventHandler(pyinotify.ProcessEvent):
-    def process_IN_MODIFY(self, event):
-        if event.pathname.split(".")[-1] in ["mp4", "mxf", "mov", "MTS", 'mts', "MOV"]:
-            print(event.pathname)
+class EventHandler(FileSystemEventHandler):
+    def on_moved(self, event):
+        if event.src_path.split(".")[-1] in ["mp4", "mxf", "mov", "MTS", 'mts', "MOV"]:
+            print(event.src_path)
+            path = event.src_path.split("/")[-1]
             transcod_obj = Transcoding_MAM()
-#            transcod_obj.parent_directory = os.getcwd()
             transcod_obj.parent_directory = '/sharepoint/TRANSCODED/'
             transcod_obj.path = '/sharepoint/TRANSCODED/'
-            transcod_obj.file_path = event.pathname 
+            transcod_obj.file_path = path
             transcod_obj.make_create_dir(transcod_obj.path)
             transcod_obj.Transcoding()
             transcod_obj.write_output()
             os.chdir(transcod_obj.parent_directory)
-
+            
 if __name__== "__main__":
-    print("Starting Watcher")
-    wm = pyinotify.WatchManager()
-    wm.add_watch('/sharepoint/TO_TRANSCODE/', pyinotify.ALL_EVENTS)
-    eh = MyEventHandler()
-    notifier = pyinotify.Notifier(wm, eh)
-    notifier.loop()
-
+    path = "/sharepoint/TRANSCODED/"
+    event_handler = EventHandler()
+    observer = Observer()
+    observer.schedule(event_handler, path, recursive=True)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
