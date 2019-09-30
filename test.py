@@ -1,41 +1,24 @@
-import pyinotify
+import sys
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
-class MyEventHandler(pyinotify.ProcessEvent):
-    def process_IN_ACCESS(self, event):
-        print("ACCESS event:", event.pathname)
+class EventHandler(FileSystemEventHandler):
+    def on_any_event(self, event):
+        print("EVENT")
+        print(event.event_type)
+        print(event.src_path)
+        print()
 
-    def process_IN_ATTRIB(self, event):
-        print("ATTRIB event:", event.pathname)
+if __name__ == "__main__":
+    path = sys.argv[1] if len(sys.argv) > 1 else '.'
 
-    def process_IN_CLOSE_NOWRITE(self, event):
-        print("CLOSE_NOWRITE event:", event.pathname)
-
-    def process_IN_CLOSE_WRITE(self, event):
-        print("CLOSE_WRITE event:", event.pathname)
-
-    def process_IN_CREATE(self, event):
-        print("CREATE event:", event.pathname)
-
-    def process_IN_DELETE(self, event):
-        print("DELETE event:", event.pathname)
-
-    def process_IN_MODIFY(self, event):
-        print("MODIFY event:", event.pathname)
-
-    def process_IN_OPEN(self, event):
-        print("OPEN event:", event.pathname)
-
-def main():
-    # watch manager
-    wm = pyinotify.WatchManager()
-    wm.add_watch('/sharepoint/TO_TRANSCODE/', pyinotify.ALL_EVENTS)
-
-    # event handler
-    eh = MyEventHandler()
-
-    # notifier
-    notifier = pyinotify.Notifier(wm, eh)
-    notifier.loop()
-
-if __name__ == '__main__':
-    main()
+    event_handler = EventHandler()
+    observer = Observer()
+    observer.schedule(event_handler, path, recursive=True)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
