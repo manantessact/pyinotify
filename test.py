@@ -16,12 +16,12 @@ class ImagesEventHandler(RegexMatchingEventHandler):
         super().__init__(self.IMAGES_REGEX)
 
     def on_created(self, event):
-    file_size = -1
-    while file_size != os.path.getsize(event.src_path):
-        file_size = os.path.getsize(event.src_path)
-        time.sleep(1)
-    print("File found")
-    self.process(event)
+        file_size = -1
+        while file_size != os.path.getsize(event.src_path):
+            file_size = os.path.getsize(event.src_path)
+            time.sleep(1)
+        print("File found")
+        self.process(event)
 
     def process(self, event):
         filename, ext = os.path.splitext(event.src_path)
