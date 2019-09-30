@@ -264,9 +264,11 @@ class Transcoding_MAM:
         
 class EventHandler(FileSystemEventHandler):
     def on_moved(self, event):
+        print
         if event.src_path.split(".")[-1] in ["mp4", "mxf", "mov", "MTS", 'mts', "MOV"]:
             print(event.src_path)
-            path = event.src_path.split("/")[-1]
+            path = "/sharepoint/TO_TRANSCODE/" + event.src_path.split("/")[-1]
+            print(path)
             transcod_obj = Transcoding_MAM()
             transcod_obj.parent_directory = '/sharepoint/TRANSCODED/'
             transcod_obj.path = '/sharepoint/TRANSCODED/'
@@ -277,7 +279,7 @@ class EventHandler(FileSystemEventHandler):
             os.chdir(transcod_obj.parent_directory)
             
 if __name__== "__main__":
-    path = "/sharepoint/TRANSCODED/"
+    path = "/sharepoint/TO_TRANSCODE/"
     event_handler = EventHandler()
     observer = Observer()
     observer.schedule(event_handler, path, recursive=True)
