@@ -10,12 +10,17 @@ while 1:
     if added:
         for vid in added:
             vid = path_to_watch + vid
-            while 1:
-                t = os.popen('ffmpeg -v 5 -i "%s" -f null - 2>&1' % vid).read()
-                t = re.sub(r"frame=.+?\r", "", t)
-                t = re.sub(r"\[(.+?) @ 0x.+?\]", "[\\1]", t)
-                print(t)
-                if 'damaged' not in t:
-                    break
+            path = vid
+            if os.path.exists(path):
+                while True:
+                    try:
+                        new_path= path + "_"
+                        os.rename(path,new_path)
+                        os.rename(new_path,path)
+                        time.sleep(0.05)
+                        print("path: %s " %(path))
+                        break
+                    except OSError:
+                        time.sleep(0.05)
             print("added : {}".format(vid))
     before = after
