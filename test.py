@@ -9,9 +9,12 @@ while 1:
     if added:
         for vid in added:
             vid = path_to_watch + vid
-            file_size = -1
-            while file_size != os.path.getsize(vid):
-                file_size = os.path.getsize(vid)
-                time.sleep(1)
+            while 1:
+                t = os.popen('ffmpeg -v 5 -i "%s" -f null - 2>&1' % vid).read()
+                t = re.sub(r"frame=.+?\r", "", t)
+                t = re.sub(r"\[(.+?) @ 0x.+?\]", "[\\1]", t)
+                print(t)
+                if 'damaged' not in t:
+                    break
             print("added : {}".format(vid))
     before = after
