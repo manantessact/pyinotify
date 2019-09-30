@@ -1,4 +1,5 @@
 import os, time
+import re
 path_to_watch = "/sharepoint/TO_TRANSCODE/"
 before = dict ([(f, None) for f in os.listdir (path_to_watch)])
 while 1:
