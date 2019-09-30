@@ -9,8 +9,8 @@ while 1:
     if added:
         for vid in added:
             file_size = -1
-            while file_size != os.path.getsize(event.src_path):
-                file_size = os.path.getsize(event.src_path)
+            while file_size != os.path.getsize(vid):
+                file_size = os.path.getsize(vid)
                 time.sleep(1)
             print("added : {}".format(vid))
     before = after
